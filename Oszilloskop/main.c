@@ -21,7 +21,6 @@ void main(), setup();
 
 void main() {
     setup();
-
     while(1) {}
 }
 
