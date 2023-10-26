@@ -70,3 +70,5 @@ inline void window_set(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t 
 }
 
 uint8_t initializeTouchControl();
+
+void fillRect(uint16_t, uint16_t, uint16_t, uint16_t, uint32_t);

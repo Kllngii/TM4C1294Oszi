@@ -98,6 +98,17 @@ uint8_t initializeTouchControl() {
     return 0;
 }
 
-void fillRect(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t max_y, unit32_t color) {
+void fillRect(uint16_t minX, uint16_t minY, uint16_t maxX, uint16_t maxY, uint32_t color) {
+    uint16_t x, y;
+    //FIXME maxX darf nie größer als MAX_X sein...
+    window_set(minX, minY, maxX, maxY);
+    write_command(0x2C);
 
+    for (x=minX; x<=maxX-1; x++) {
+        for (y=minY; y<=maxY-1; y++) {
+            write_data((color>>16)&0xff);   //R
+            write_data((color>>8)&0xff);    //G
+            write_data((color)&0xff);       //B
+        }
+    }
 }
