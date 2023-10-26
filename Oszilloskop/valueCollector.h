@@ -18,5 +18,9 @@
 #include <driverlib/gpio.h>
 #include <driverlib/pin_map.h>
 #include <driverlib/sysctl.h>
+#include <driverlib/adc.h>
+#include <inc/hw_memmap.h>
 
-int initialize();
+uint8_t initializeValueCollector();
+
+void sample(uint32_t*);
