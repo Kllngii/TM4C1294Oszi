@@ -20,7 +20,9 @@
 #include <driverlib/sysctl.h>
 #include <driverlib/adc.h>
 #include <inc/hw_memmap.h>
+#include <inc/tm4c1294ncpdt.h>
 
 uint8_t initializeValueCollector();
 
 void sample(uint32_t*);
+
