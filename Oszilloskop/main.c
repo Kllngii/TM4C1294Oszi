@@ -38,17 +38,18 @@ void main() {
 	drawTitleString(0, 320, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xff0000);
 	drawTitleString(0, 340, "abcdefghijklmnopqrstuvwxyz", 0xff0000);
 
-	uint32_t iterations = 8000000;
+	uint32_t iterations = 800000;
 
 	//fillRect(200, 300, 300, 400, 0xff00ff);
 	while(1) {
 		//
-		sample(adcBuffer);
+		//sample(adcBuffer);
 //		printf("Sample erhalten: %4d\n", adcBuffer[0]);
 		// Aktives Warten (Busy Waiting)
 		for (uint32_t i = 0; i < iterations; ++i) {
 			// Keine Operation (NOP)
 		}
+		printf("isBusy = %d\n", ADCBusy(ADC0_BASE));
 	}
 }
 

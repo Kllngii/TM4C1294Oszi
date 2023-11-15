@@ -12,21 +12,36 @@
 #include "valueCollector.h"
 
 /**
- * @short PC4-PC7 als Input setzen und mit ADC verbinden
+ * Dem Tivaware Datenblatt (S. 23ff) zufolge:
+ * - Takt an Periphere geben
+ * - GPIO Pins konfigurieren
+ * - Sample Sequencer Setup
+ * - ADC Interrupt Setup
+ *
+ * @short PC4 bis PC7 als ADC Input konfigurieren
+ *
  * @return 0 wenn alles erfolgreich
  */
 uint8_t initializeValueCollector() {
-	//	//ADC Takt erzeugen
+	const int PIN4_SAMPLE_SEQUENCER = 3;
+
+	//Takt an benötigte Peripherie geben
 	SysCtlClockSet(SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC));
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
+	ADCClockConfigSet(ADC0_BASE, ADC_CLOCK_SRC_PIOSC | ADC_CLOCK_RATE_FULL, 1); //Samplefrequenz von PIOSC * FULL / 1 -> 16MHz (* 1/1)
 
+	//GPIO Pins setzen & SampleSequencer Setup
 	GPIOPinTypeADC(GPIO_PORTC_BASE, GPIO_PIN_4);
-	ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
-	ADCSequenceStepConfigure(ADC0_BASE, 3, 0, ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
-	ADCSequenceEnable(ADC0_BASE, 3);
-	ADCIntClear(ADC0_BASE, 3);
+	ADCSequenceConfigure(ADC0_BASE, PIN4_SAMPLE_SEQUENCER, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSequenceStepConfigure(ADC0_BASE, PIN4_SAMPLE_SEQUENCER, 0, ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
+	ADCSequenceEnable(ADC0_BASE, PIN4_SAMPLE_SEQUENCER);
+
+	//ADC Interrupt Setup
+	ADCIntRegister(ADC0_BASE, PIN4_SAMPLE_SEQUENCER, processSample);
+	ADCIntClear(ADC0_BASE, PIN4_SAMPLE_SEQUENCER); //Sicherheitshalber INT Flag löschen...
+	ADCIntEnable(ADC0_BASE, PIN4_SAMPLE_SEQUENCER);
 
 //
 //	GPIO_PORTC_AHB_DIR_R &= ~0xF0;   // Eingang für C4, C5, C6, C7
@@ -36,6 +51,11 @@ uint8_t initializeValueCollector() {
 
 	printf("ValueCollector Setup erfolgreich!\n");
 	return 0;
+}
+
+void processSample(void) {
+	printf("Sample\n");
+	ADCIntClear(ADC0_BASE, 3);
 }
 
 void sample(uint32_t* adcBuffer) {

@@ -24,5 +24,7 @@
 
 uint8_t initializeValueCollector();
 
+void processSample(void);
+
 void sample(uint32_t*);
 
